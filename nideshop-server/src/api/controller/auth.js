@@ -48,6 +48,76 @@ module.exports = class extends Base {
     return this.success({ token: sessionKey, userInfo: newUserInfo });
   }
 
+  async loginAction() {
+    const username = this.post('username');
+    const password = this.post('password');
+    const clientIp = this.ctx.ip;
+
+    const user = await this.model('user').where({ username: username }).find();
+    if (think.isEmpty(user)) {
+      return this.fail(401, '用户名或密码不正确');
+    }
+
+    const salt = user.password_salt || '';
+    if (think.md5(password + '' + salt) !== user.password) {
+      return this.fail(401, '用户名或密码不正确');
+    }
+
+    await this.model('user').where({ id: user.id }).update({
+      last_login_time: parseInt(new Date().getTime() / 1000),
+      last_login_ip: clientIp
+    });
+
+    const TokenSerivce = this.service('token', 'api');
+    const sessionKey = await TokenSerivce.create({ user_id: user.id });
+
+    if (think.isEmpty(sessionKey)) {
+      return this.fail('生成 token 失败');
+    }
+
+    const userInfo = await this.model('user').field(['id', 'username', 'nickname', 'gender', 'avatar', 'birthday']).where({ id: user.id }).find();
+
+    return this.success({ token: sessionKey, userInfo: userInfo });
+  }
+
+  async registerAction() {
+    const username = this.post('username');
+    const password = this.post('password');
+    const clientIp = this.ctx.ip;
+
+    const user = await this.model('user').where({ username: username }).find();
+    if (!think.isEmpty(user)) {
+      return this.fail(401, '用户名已存在');
+    }
+
+    const passwordSalt = think.uuid(8);
+
+    const userId = await this.model('user').add({
+      username: username,
+      password: think.md5(password + '' + passwordSalt),
+      password_salt: passwordSalt,
+      register_time: parseInt(new Date().getTime() / 1000),
+      register_ip: clientIp,
+      last_login_time: parseInt(new Date().getTime() / 1000),
+      last_login_ip: clientIp,
+      mobile: '',
+      avatar: '',
+      gender: 0,
+      nickname: username
+    });
+
+    const newUserInfo = await this.model('user').field(['id', 'username', 'nickname', 'gender', 'avatar', 'birthday']).where({ id: userId }).find();
+
+    const TokenSerivce = this.service('token', 'api');
+    const sessionKey = await TokenSerivce.create({ user_id: userId });
+
+    if (think.isEmpty(sessionKey)) {
+      return this.fail('生成 token 失败');
+    }
+
+    return this.success({ token: sessionKey, userInfo: newUserInfo });
+  }
+
   async logoutAction() {
     return this.success();
   }

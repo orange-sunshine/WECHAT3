@@ -4,7 +4,6 @@ Page({
   data: {
     username: '',
     password: '',
-    code: '',
     loginErrorCount: 0
   },
   onLoad: function (options) {
@@ -38,8 +37,9 @@ Page({
       return false;
     }
 
+    wx.showLoading({ title: '登录中...' });
     wx.request({
-      url: api.ApiRootUrl + 'auth/login',
+      url: api.AuthLogin,
       data: {
         username: that.data.username,
         password: that.data.password
@@ -49,7 +49,8 @@ Page({
         'content-type': 'application/json'
       },
       success: function (res) {
-        if(res.data.code == 200){
+        wx.hideLoading();
+        if(res.data.errno === 0){
           that.setData({
             'loginErrorCount': 0
           });
@@ -62,7 +63,21 @@ Page({
               });
             }
           });
+        } else {
+          wx.showModal({
+            title: '错误信息',
+            content: res.data.errmsg || '登录失败',
+            showCancel: false
+          });
         }
+      },
+      fail: function (err) {
+        wx.hideLoading();
+        wx.showModal({
+          title: '网络错误',
+          content: err.errMsg || '请求失败',
+          showCancel: false
+        });
       }
     });
   },
@@ -78,12 +93,6 @@ Page({
       password: e.detail.value
     });
   },
-  bindCodeInput: function (e) {
-
-    this.setData({
-      code: e.detail.value
-    });
-  },
   clearInput: function (e) {
     switch (e.currentTarget.id) {
       case 'clear-username':
@@ -94,11 +103,6 @@ Page({
       case 'clear-password':
         this.setData({
           password: ''
-        });
-        break;
-      case 'clear-code':
-        this.setData({
-          code: ''
         });
         break;
     }

@@ -9296,6 +9296,7 @@ CREATE TABLE `nideshop_user` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(60) NOT NULL DEFAULT '',
   `password` varchar(32) NOT NULL DEFAULT '',
+  `password_salt` varchar(60) NOT NULL DEFAULT '',
   `gender` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `birthday` int(11) unsigned NOT NULL DEFAULT '0',
   `register_time` int(11) unsigned NOT NULL DEFAULT '0',

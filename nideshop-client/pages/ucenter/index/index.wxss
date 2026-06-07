@@ -192,6 +192,36 @@ page{
   width: 100%;
 }
 
-.dialog-login .dialog-body button{
+.dialog-login .dialog-body .form-item{
+  width: 100%;
+  height: 80rpx;
+  border-bottom: 1px solid #d9d9d9;
+  margin-top: 20rpx;
+}
+
+.dialog-login .dialog-body .form-item .input{
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 28rpx;
+}
+
+.dialog-login .dialog-body .login-btn{
+  margin-top: 40rpx;
+  background: #b4282d;
+  color: #fff;
+  border-radius: 6rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+}
+
+.dialog-login .dialog-body .register-btn{
+  display: block;
   margin-top: 30rpx;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  height: 60rpx;
+  line-height: 60rpx;
 }
