@@ -187,15 +187,15 @@ module.exports = class extends Base {
 
   // 是否选择商品，如果已经选择，则取消选择，批量操作
   async checkedAction() {
-    let productId = this.post('productIds').toString();
+    const productIds = this.post('productIds');
     const isChecked = this.post('isChecked');
 
-    if (think.isEmpty(productId)) {
-      return this.fail('删除出错');
+    if (think.isEmpty(productIds)) {
+      return this.fail('参数错误');
     }
 
-    productId = productId.split(',');
-    await this.model('cart').where({product_id: {'in': productId}}).update({checked: parseInt(isChecked)});
+    const productId = productIds.toString().split(',');
+    await this.model('cart').where({user_id: this.getLoginUserId(), product_id: {'in': productId}}).update({checked: parseInt(isChecked)});
 
     return this.success(await this.getCart());
   }
@@ -209,7 +209,7 @@ module.exports = class extends Base {
 
     productId = productId.split(',');
 
-    await this.model('cart').where({product_id: {'in': productId}}).delete();
+    await this.model('cart').where({user_id: this.getLoginUserId(), product_id: {'in': productId}}).delete();
 
     return this.success(await this.getCart());
   }
@@ -235,9 +235,9 @@ module.exports = class extends Base {
     // 选择的收货地址
     let checkedAddress = null;
     if (addressId) {
-      checkedAddress = await this.model('address').where({is_default: 1, user_id: this.getLoginUserId()}).find();
-    } else {
       checkedAddress = await this.model('address').where({id: addressId, user_id: this.getLoginUserId()}).find();
+    } else {
+      checkedAddress = await this.model('address').where({is_default: 1, user_id: this.getLoginUserId()}).find();
     }
 
     if (!think.isEmpty(checkedAddress)) {

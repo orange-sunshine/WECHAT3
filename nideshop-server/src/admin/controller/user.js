@@ -26,15 +26,13 @@ module.exports = class extends Base {
 
   async storeAction() {
     if (!this.isPost) {
-      return false;
+      return this.fail(405, '请求方法不允许');
     }
 
     const values = this.post();
     const id = this.post('id');
 
     const model = this.model('user');
-    values.is_show = values.is_show ? 1 : 0;
-    values.is_new = values.is_new ? 1 : 0;
     if (id > 0) {
       await model.where({id: id}).update(values);
     } else {

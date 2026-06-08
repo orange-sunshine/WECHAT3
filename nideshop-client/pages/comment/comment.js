@@ -40,16 +40,18 @@ Page({
       if (res.errno === 0) {
 
         if (that.data.showType == 0) {
+          const newAllCommentList = that.data.allCommentList.concat(res.data.data);
           that.setData({
-            allCommentList: that.data.allCommentList.concat(res.data.data),
+            allCommentList: newAllCommentList,
             allPage: res.data.currentPage,
-            comments: that.data.allCommentList.concat(res.data.data)
+            comments: newAllCommentList
           });
         } else {
+          const newPicCommentList = that.data.picCommentList.concat(res.data.data);
           that.setData({
-            picCommentList: that.data.picCommentList.concat(res.data.data),
+            picCommentList: newPicCommentList,
             picPage: res.data.currentPage,
-            comments: that.data.picCommentList.concat(res.data.data)
+            comments: newPicCommentList
           });
         }
       }
@@ -91,7 +93,7 @@ Page({
     console.log('onPullDownRefresh');
     if ( this.data.showType == 0) {
 
-      if (this.data.allCount / this.data.size < this.data.allPage) {
+      if (this.data.allPage * this.data.size >= this.data.allCount) {
         return false;
       }
 
@@ -99,7 +101,7 @@ Page({
         'allPage' : this.data.allPage + 1
       });
     } else {
-      if (this.data.hasPicCount / this.data.size < this.data.picPage) {
+      if (this.data.picPage * this.data.size >= this.data.hasPicCount) {
         return false;
       }
 

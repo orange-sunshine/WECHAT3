@@ -45,27 +45,22 @@ Page({
   },
   payOrder() {
     let that = this;
-    util.request(api.PayPrepayId, {
-      orderId: that.data.orderId || 15
-    }).then(function (res) {
+    util.request(api.PayPrepayId.replace('prepay', 'mockPay'), { orderId: that.data.orderId }, 'POST').then(function (res) {
       if (res.errno === 0) {
-        const payParam = res.data;
-        wx.requestPayment({
-          'timeStamp': payParam.timeStamp,
-          'nonceStr': payParam.nonceStr,
-          'package': payParam.package,
-          'signType': payParam.signType,
-          'paySign': payParam.paySign,
-          'success': function (res) {
-            console.log(res)
-          },
-          'fail': function (res) {
-            console.log(res)
-          }
+        wx.showToast({
+          title: '支付成功',
+          icon: 'success',
+          duration: 2000
         });
+        setTimeout(function() {
+          wx.redirectTo({
+            url: '/pages/payResult/payResult?status=true&orderId=' + that.data.orderId,
+          });
+        }, 2000);
+      } else {
+        util.showErrorToast('支付失败');
       }
     });
-
   },
   onReady: function () {
     // 页面渲染完成

@@ -29,33 +29,28 @@ Page({
     // 页面关闭
 
   },
-  //向服务请求支付参数
-  requestPayParam() {
+  //模拟支付
+  startPay() {
     let that = this;
-    util.request(api.PayPrepayId, { orderId: that.data.orderId, payType: 1 }).then(function (res) {
+    util.request(api.PayPrepayId.replace('prepay', 'mockPay'), { orderId: that.data.orderId }, 'POST').then(function (res) {
       if (res.errno === 0) {
-        let payParam = res.data;
-        wx.requestPayment({
-          'timeStamp': payParam.timeStamp,
-          'nonceStr': payParam.timeStamp,
-          'package': payParam.nonceStr,
-          'signType': payParam.signType,
-          'paySign': payParam.paySign,
-          'success': function (res) {
-            wx.redirectTo({
-              url: '/pages/payResult/payResult?status=true',
-            })
-          },
-          'fail': function (res) {
-            wx.redirectTo({
-              url: '/pages/payResult/payResult?status=false',
-            })
-          }
-        })
+        wx.showToast({
+          title: '支付成功',
+          icon: 'success',
+          duration: 2000
+        });
+        setTimeout(function() {
+          wx.redirectTo({
+            url: '/pages/payResult/payResult?status=true&orderId=' + that.data.orderId,
+          });
+        }, 2000);
+      } else {
+        wx.showToast({
+          title: '支付失败',
+          image: '/static/images/icon_error.png',
+          duration: 2000
+        });
       }
     });
-  },
-  startPay() {
-    this.requestPayParam();
   }
 })

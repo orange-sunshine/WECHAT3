@@ -204,7 +204,7 @@ function transEmojiStr(str){
       var emojiObj = {}
       emojiObj.node = "text";
       emojiObj.text = str;
-      array = [emojiObj];
+      var array = [emojiObj];
       return array;
   }
   //这个地方需要调整

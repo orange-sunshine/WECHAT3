@@ -7,7 +7,7 @@ module.exports = class extends think.Model {
    */
   generateOrderNumber() {
     const date = new Date();
-    return date.getFullYear() + _.padStart(date.getMonth(), 2, '0') + _.padStart(date.getDay(), 2, '0') + _.padStart(date.getHours(), 2, '0') + _.padStart(date.getMinutes(), 2, '0') + _.padStart(date.getSeconds(), 2, '0') + _.random(100000, 999999);
+    return date.getFullYear() + _.padStart(date.getMonth() + 1, 2, '0') + _.padStart(date.getDate(), 2, '0') + _.padStart(date.getHours(), 2, '0') + _.padStart(date.getMinutes(), 2, '0') + _.padStart(date.getSeconds(), 2, '0') + _.random(100000, 999999);
   }
 
   /**
@@ -54,8 +54,7 @@ module.exports = class extends think.Model {
 
     // 如果订单已经发货，没有收货，则可收货操作和退款、退货操作
     if (orderInfo.order_status === 300) {
-      handleOption.cancel = true;
-      handleOption.pay = true;
+      handleOption.delivery = true;
       handleOption.return = true;
     }
 
@@ -75,6 +74,21 @@ module.exports = class extends think.Model {
     switch (orderInfo.order_status) {
       case 0:
         statusText = '未付款';
+        break;
+      case 101:
+        statusText = '已取消';
+        break;
+      case 102:
+        statusText = '已删除';
+        break;
+      case 201:
+        statusText = '已付款';
+        break;
+      case 300:
+        statusText = '已发货';
+        break;
+      case 301:
+        statusText = '已收货';
         break;
     }
 

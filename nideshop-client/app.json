@@ -19,6 +19,7 @@
     "pages/pay/pay",
     "pages/payResult/payResult",
     "pages/ucenter/index/index",
+    "pages/ucenter/settings/settings",
     "pages/topic/topic",
     "pages/comment/comment",
     "pages/commentPost/commentPost",

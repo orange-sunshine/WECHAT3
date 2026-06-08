@@ -6,7 +6,7 @@ module.exports = class extends Base {
   async infoAction() {
     const userInfo = await this.model('user').where({id: this.getLoginUserId()}).find();
     delete userInfo.password;
-    return this.json(userInfo);
+    return this.success(userInfo);
   }
 
   /**
@@ -21,8 +21,17 @@ module.exports = class extends Base {
 
     const avatarPath = think.RESOURCE_PATH + `/static/user/avatar/${this.getLoginUserId()}.` + _.last(_.split(avatar.path, '.'));
 
-    fs.rename(avatar.path, avatarPath, function(res) {
-      return this.success();
-    });
+    try {
+      await new Promise((resolve, reject) => {
+        fs.rename(avatar.path, avatarPath, (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+    } catch (err) {
+      return this.fail('头像保存失败');
+    }
+
+    return this.success();
   }
 };

@@ -42,7 +42,7 @@ module.exports = class extends Base {
 
   async storeAction() {
     if (!this.isPost) {
-      return false;
+      return this.fail(405, '请求方法不允许');
     }
 
     const values = this.post();

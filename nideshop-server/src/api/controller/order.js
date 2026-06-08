@@ -51,14 +51,9 @@ module.exports = class extends Base {
     // 订单状态的处理
     orderInfo.order_status_text = await this.model('order').getOrderStatusText(orderId);
     orderInfo.add_time = moment.unix(orderInfo.add_time).format('YYYY-MM-DD HH:mm:ss');
-    orderInfo.final_pay_time = moment('001234', 'Hmmss').format('mm:ss');
-    // 订单最后支付时间
-    if (orderInfo.order_status === 0) {
-      // if (moment().subtract(60, 'minutes') < moment(orderInfo.add_time)) {
-      orderInfo.final_pay_time = moment('001234', 'Hmmss').format('mm:ss');
-      // } else {
-      //     //超过时间不支付，更新订单状态为取消
-      // }
+    // 订单最后支付时间（创建订单后30分钟内）
+    if (orderInfo.order_status === 0 && orderInfo.add_time) {
+      orderInfo.final_pay_time = moment.unix(orderInfo.add_time).add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss');
     }
 
     // 订单可操作的选择,删除，支付，收货，评论，退换货
@@ -106,7 +101,7 @@ module.exports = class extends Base {
     // 订单价格计算
     const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice; // 订单的总价
     const actualPrice = orderTotalPrice - 0.00; // 减去其它支付的金额后，要实际支付的金额
-    const currentTime = parseInt(this.getTime() / 1000);
+    const currentTime = this.getTime();
 
     const orderInfo = {
       order_sn: this.model('order').generateOrderNumber(),

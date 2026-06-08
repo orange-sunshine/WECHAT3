@@ -21,9 +21,12 @@ Page({
       }
     });
   },
-  payOrder(){
+  payOrder(event){
+    const orderIndex = event.currentTarget.dataset.orderIndex;
+    const order = this.data.orderList[orderIndex];
+    if (!order) return;
     wx.redirectTo({
-      url: '/pages/pay/pay',
+      url: '/pages/pay/pay?orderId=' + order.id + '&actualPrice=' + order.actual_price,
     })
   },
   onReady:function(){

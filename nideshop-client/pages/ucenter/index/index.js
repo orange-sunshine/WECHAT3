@@ -31,7 +31,9 @@ Page({
 
   onUserInfoClick: function() {
     if (wx.getStorageSync('token')) {
-
+      wx.navigateTo({
+        url: '/pages/ucenter/settings/settings',
+      });
     } else {
       this.showLoginDialog();
     }
@@ -160,7 +162,10 @@ Page({
   },
 
   onSectionItemClick: function(event) {
-
+    wx.showToast({
+      title: '功能开发中',
+      icon: 'none'
+    });
   },
 
   // TODO 移到个人信息页面

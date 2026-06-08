@@ -1,56 +1,63 @@
-var app = getApp();
+var util = require('../../../utils/util.js');
+var api = require('../../../config/api.js');
+
 Page({
   data: {
     username: '',
-    code: ''
+    oldPassword: '',
+    password: '',
+    confirmPassword: ''
   },
-  onLoad: function (options) {
-    // 页面初始化 options为页面跳转所带来的参数
-    // 页面渲染完成
-    
+  bindUsernameInput: function(e) {
+    this.setData({ username: e.detail.value });
   },
-  onReady: function () {
-
+  bindOldPasswordInput: function(e) {
+    this.setData({ oldPassword: e.detail.value });
   },
-  onShow: function () {
-    // 页面显示
-
+  bindPasswordInput: function(e) {
+    this.setData({ password: e.detail.value });
   },
-  onHide: function () {
-    // 页面隐藏
-
+  bindConfirmPasswordInput: function(e) {
+    this.setData({ confirmPassword: e.detail.value });
   },
-  onUnload: function () {
-    // 页面关闭
-
-  },
-  startLogin: function(){
+  submit: function() {
     var that = this;
-  },
-  bindUsernameInput: function(e){
-    
-    this.setData({
-      username: e.detail.value
-    });
-  },
-  bindCodeInput: function(e){
-    
-    this.setData({
-      code: e.detail.value
-    });
-  },
-  clearInput: function(e){
-    switch (e.currentTarget.id){
-      case 'clear-username':
-        this.setData({
-          username: ''
-        });
-        break;
-        case 'clear-code':
-        this.setData({
-          code: ''
-        });
-        break;
+    if (!that.data.username || !that.data.oldPassword || !that.data.password || !that.data.confirmPassword) {
+      wx.showToast({
+        title: '请填写完整信息',
+        icon: 'none'
+      });
+      return;
     }
+    if (that.data.password !== that.data.confirmPassword) {
+      wx.showToast({
+        title: '两次密码输入不一致',
+        icon: 'none'
+      });
+      return;
+    }
+    wx.showLoading({ title: '提交中...' });
+    util.request(api.AuthRegister.replace('register', 'changePassword'), {
+      username: that.data.username,
+      oldPassword: that.data.oldPassword,
+      password: that.data.password
+    }, 'POST').then(function(res) {
+      wx.hideLoading();
+      if (res.errno === 0) {
+        wx.showToast({
+          title: '修改成功',
+          icon: 'success',
+          duration: 2000
+        });
+        setTimeout(function() {
+          wx.navigateBack();
+        }, 2000);
+      } else {
+        wx.showToast({
+          title: res.errmsg || '修改失败',
+          icon: 'none'
+        });
+      }
+    });
   }
 })

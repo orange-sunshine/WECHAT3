@@ -58,7 +58,7 @@ module.exports = class extends Base {
     const userHasCollect = await this.model('collect').isUserHasCollect(this.getLoginUserId(), 0, goodsId);
 
     // 记录用户的足迹 TODO
-    await await this.model('footprint').addFootprint(this.getLoginUserId(), goodsId);
+    await this.model('footprint').addFootprint(this.getLoginUserId(), goodsId);
 
     // return this.json(jsonData);
     return this.success({

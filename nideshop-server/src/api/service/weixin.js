@@ -107,7 +107,7 @@ module.exports = class extends think.Service {
             'package': 'prepay_id=' + res.prepay_id,
             'signType': 'MD5'
           };
-          const paramStr = `appId=${returnParams.appid}&nonceStr=${returnParams.nonceStr}&package=${returnParams.package}&signType=${returnParams.signType}&timeStamp=${returnParams.timeStamp}&key=` + think.config('weixin.partner_key');
+          const paramStr = `appid=${returnParams.appid}&nonceStr=${returnParams.nonceStr}&package=${returnParams.package}&signType=${returnParams.signType}&timeStamp=${returnParams.timeStamp}&key=` + think.config('weixin.partner_key');
           returnParams.paySign = md5(paramStr).toUpperCase();
           resolve(returnParams);
         } else {
@@ -142,7 +142,6 @@ module.exports = class extends think.Service {
    */
   signQuery(queryStr) {
     queryStr = queryStr + '&key=' + think.config('weixin.partner_key');
-    const md5 = require('md5');
     const md5Sign = md5(queryStr);
     return md5Sign.toUpperCase();
   }

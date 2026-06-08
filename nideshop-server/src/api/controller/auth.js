@@ -121,4 +121,32 @@ module.exports = class extends Base {
   async logoutAction() {
     return this.success();
   }
+
+  async changePasswordAction() {
+    const username = this.post('username');
+    const oldPassword = this.post('oldPassword');
+    const password = this.post('password');
+
+    if (think.isEmpty(username) || think.isEmpty(oldPassword) || think.isEmpty(password)) {
+      return this.fail('参数不能为空');
+    }
+
+    const user = await this.model('user').where({ username: username }).find();
+    if (think.isEmpty(user)) {
+      return this.fail('用户不存在');
+    }
+
+    const salt = user.password_salt || '';
+    if (think.md5(oldPassword + '' + salt) !== user.password) {
+      return this.fail('现有密码不正确');
+    }
+
+    const passwordSalt = think.uuid(8);
+    await this.model('user').where({ username: username }).update({
+      password: think.md5(password + '' + passwordSalt),
+      password_salt: passwordSalt
+    });
+
+    return this.success();
+  }
 };

@@ -12,6 +12,9 @@ module.exports = class extends Base {
     const userId = this.getLoginUserId();
     // 删除当天的同一个商品的足迹
     const goods = await this.model('footprint').where({user_id: userId, id: footprintId}).find();
+    if (think.isEmpty(goods)) {
+      return this.fail('足迹不存在');
+    }
     await this.model('footprint').where({user_id: userId, goods_id: goods.goods_id}).delete();
 
     return this.success('删除成功');
